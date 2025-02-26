@@ -37,21 +37,21 @@ strs[i] consists of lowercase English letters.
 class Solution {
 public:
     vector<vector<string>> groupAnagrams(vector<string>& strs) {
-        unordered_map<string,int> hashmap;
+        unordered_map<string,int> hashmap;    //hashmap to map string in ascending order to the index it corresponds in the ans vector
         int c=0;
-        vector<vector<string>> ans;
+        vector<vector<string>> ans;           //vector of groups of strings which are anagrams hence have same sorted order
 
         for(auto s:strs)
         {
             string str=s;
-            sort(str.begin(),str.end());
-            if(hashmap.find(str)==hashmap.end())
+            sort(str.begin(),str.end());         //sort a copy of the string
+            if(hashmap.find(str)==hashmap.end())   //if the sorted string is not in the hashmap, we assign an index to it, and push the original string in the ans vector inside a container vector
             {
-                hashmap[str]=c++;
+                hashmap[str]=c++;               //we increment c so as to store the next index, next time this happens
                 ans.push_back({s});
             }
             else
-            ans[hashmap[str]].push_back(s);
+            ans[hashmap[str]].push_back(s);     //else if sorted string exists in hashmap, we extract the corresponding index in the ans vector from the hashmap and push the original string in that group
         }
 
         return ans;
