@@ -1,0 +1,76 @@
+/*
+338. Counting Bits
+
+Given an integer n, return an array ans of length n + 1 such that for each i (0 <= i <= n), ans[i] is the number of 1's in the binary representation of i.
+
+ 
+
+Example 1:
+
+Input: n = 2
+Output: [0,1,1]
+Explanation:
+0 --> 0
+1 --> 1
+2 --> 10
+
+Example 2:
+
+Input: n = 5
+Output: [0,1,1,2,1,2]
+Explanation:
+0 --> 0
+1 --> 1
+2 --> 10
+3 --> 11
+4 --> 100
+5 --> 101
+ 
+
+Constraints:
+
+0 <= n <= 105
+ 
+
+Follow up:
+
+It is very easy to come up with a solution with a runtime of O(n log n). Can you do it in linear time O(n) and possibly in a single pass?
+Can you do it without using any built-in function (i.e., like __builtin_popcount in C++)?
+*/
+
+
+class Solution {
+public:
+    vector<int> countBits(int n) {
+        if(n==0) return {0};                    //base case which doesn't need DP
+
+        vector<int> ans(n+1);                   //ans vector to store number of 1 bits
+
+        ans[0]=0;                                  //base cases for DP
+        ans[1]=1;
+
+        for(int i=2;i<=n;i++)
+        {
+            if(log2(i)==(int)log2(i))               //if number is a power of 2 it has only 1 1-bit at the starting
+            ans[i]=1;
+            else    
+            {
+                if(i%2==1)                          
+                ans[i]=ans[i-1]+1;                  //else if the number is odd, it has one more 1-bit than the previous number which comes at least significant digit
+                else
+                {
+                    int c=0;                        
+                    for(int j=0;j<32;j++)
+                    {
+                        if(1<<j&(i-1))
+                        c++;
+                        else break;
+                    }
+                    ans[i]=ans[i-1]-(c-1);          //else if the number is even, and the previous number has x consecutive 1-bits at end, then number of 1-bits in the current number is (x-1) less than number of 1-bits of the previous number...x-1 because the x consecutive ones are converted to zeroes while one extra one is placed in the place before the consecutive ones
+                }
+            }
+        }
+
+        return ans;
+    }
+};
