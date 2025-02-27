@@ -1,0 +1,67 @@
+/*
+
+20. Valid Parentheses
+
+Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+An input string is valid if:
+
+Open brackets must be closed by the same type of brackets.
+Open brackets must be closed in the correct order.
+Every close bracket has a corresponding open bracket of the same type.
+ 
+
+Example 1:
+
+Input: s = "()"
+
+Output: true
+
+Example 2:
+
+Input: s = "()[]{}"
+
+Output: true
+
+Example 3:
+
+Input: s = "(]"
+
+Output: false
+
+Example 4:
+
+Input: s = "([])"
+
+Output: true
+ 
+
+Constraints:
+
+1 <= s.length <= 104
+s consists of parentheses only '()[]{}'.
+*/
+
+
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> stck;
+
+        for(int i=0;i<s.size();i++)
+        {
+            if(s[i]=='('||s[i]=='{'||s[i]=='[')                     //if character is opening bracket,put in on stack
+            stck.push(s[i]);
+            else if(s[i]==')'&&stck.size()!=0&&stck.top()=='(')     //pop off opening bracket if on top of stack and if character is corresponding closing bracket
+            stck.pop();
+            else if(s[i]=='}'&&stck.size()!=0&&stck.top()=='{')
+            stck.pop();
+            else if(s[i]==']'&&stck.size()!=0&&stck.top()=='[')
+            stck.pop();
+            else
+            return false;                                              //else return false as it is not valid sequence
+        }
+        if(stck.size()==0) return true;                                 //valid sequence
+        else return false;                                              //some opening brackets are still on stack so invalid
+    }
+};
