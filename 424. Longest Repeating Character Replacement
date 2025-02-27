@@ -1,0 +1,62 @@
+/*
+
+424. Longest Repeating Character Replacement
+
+You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
+
+Return the length of the longest substring containing the same letter you can get after performing the above operations.
+
+ 
+
+Example 1:
+
+Input: s = "ABAB", k = 2
+Output: 4
+Explanation: Replace the two 'A's with two 'B's or vice versa.
+
+Example 2:
+
+Input: s = "AABABBA", k = 1
+Output: 4
+Explanation: Replace the one 'A' in the middle with 'B' and form "AABBBBA".
+The substring "BBBB" has the longest repeating letters, which is 4.
+There may exists other ways to achieve this answer too.
+ 
+
+Constraints:
+
+1 <= s.length <= 105
+s consists of only uppercase English letters.
+0 <= k <= s.length*/
+
+
+class Solution {
+public:
+    int characterReplacement(string s, int k) {
+        vector<int> freq(26,0);     //to hold frequencies of alphabets
+        int m=0,c=0,ans=0;          //hold max frequency, counter c to co pare with k and ans is the max length to be returned
+
+        int left=0,right=0;         //indexes for sliding window approach
+
+        while(right<s.size())
+        {
+            freq[s[right]-'A']++;               //increments frequency of character at  right index
+
+            m=max(m,freq[s[right]-'A']);        //updates max frequency
+
+            c=right-left+1-m;                   //updates c counter to be compared with k
+
+            if(c<=k)
+            ans=max(ans,right-left+1);          //no changes to left index to be done here
+            else
+            {                
+                freq[s[left]-'A']--;            //left index need to be increased since c>k so frequency of character is decreased at left index
+                left++;
+            }
+            right++;                            //right index is updated
+        }
+
+        return ans;
+
+    }
+};
