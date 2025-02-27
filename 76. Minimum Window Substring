@@ -1,0 +1,132 @@
+/*
+76. Minimum Window Substring
+
+Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
+
+The testcases will be generated such that the answer is unique.
+ 
+
+Example 1:
+
+Input: s = "ADOBECODEBANC", t = "ABC"
+Output: "BANC"
+Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from string t.
+
+Example 2:
+
+Input: s = "a", t = "a"
+Output: "a"
+Explanation: The entire string s is the minimum window.
+
+Example 3:
+
+Input: s = "a", t = "aa"
+Output: ""
+Explanation: Both 'a's from t must be included in the window.
+Since the largest window of s only has one 'a', return empty string.
+ 
+
+Constraints:
+
+m == s.length
+n == t.length
+1 <= m, n <= 105
+s and t consist of uppercase and lowercase English letters.
+ 
+
+Follow up: Could you find an algorithm that runs in O(m + n) time?*/
+
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        unordered_map<char,int> smap,tmap;                  //hashmaps for storing frequencies in string s and t
+        
+        for(auto c:t)
+        tmap[c]++;
+
+        for(auto c:s)
+        smap[c]++;
+
+        for(auto p:tmap)                                    //first we check if whole of s has the characters that are in t or not.If not, we return ""
+        if(p.second>smap[p.first])
+        return "";
+
+        smap.clear();                                       //we clear hashmap of s to go through the process of finding min length string having all characters of t
+
+        int start=0,length=s.size(),left=0,right=0;         //start and length store final string address.start stores the index where the answer string start and length,its size. left and right are indexes for sliding window approach
+
+        while(right<s.size())
+        {
+            //cout<<s.substr(left,right-left+1)<<endl;
+
+            if(tmap.find(s[right])!=tmap.end())             //we increment frequency of only those characters present in t, in smap
+            {
+                smap[s[right]]++;
+            }
+
+            bool flag=true;
+
+            for(auto p:tmap)                                //if all characters of t are not present in the substring s[left,right], flag becomes false. hence below loop is skipped and right is updated and next iteration of above loop continues
+            if(p.second>smap[p.first])
+            {
+                flag=false;break;
+            }
+
+            while(flag==true)
+            {
+                if(length>right-left+1)                     //if flag is true, we check if length of current answer string is more  than current size which is right-left+1. if so, we update it
+                {
+                    length=min(length,right-left+1);
+                    start=left;
+                    //cout<<start<<" "<<length<<endl;
+                }
+            
+                if(tmap.find(s[left])!=tmap.end())                  
+                {
+                    smap[s[left]]--;                            //then we try to decrease the size of the current string by incrementing left until frequency of a particular character in the current string becomes smaller than that in t. then we break from this loop. this helps us to get the minimal length string which has all characters as t
+                    //cout<<s[left]<<" "<<smap[s[left]]<<endl;
+                    if(smap[s[left]]<tmap[s[left]])
+                    {
+                        left++;
+                        break;
+                    }
+                }
+
+                left++;
+            }
+
+            right++;
+        }
+
+        bool flag=true;                             //the below code is for situations if right=s.size(). if the condition satisfies i.e all characters of t are in current string, we go on decreasing the size of current string by incrementing left until either l=s.size() or frequency of a particular is less in current string than t.
+        for(auto p:tmap)
+        if(p.second>smap[p.first])
+        {
+            flag=false;break;
+        }
+
+        while(flag==true&&left<s.size())
+        {
+            //cout<<s.substr(left)<<endl;
+
+            if(length>right-left)
+            {
+                length=min(length,right-left);
+                start=left;
+            }
+                
+            if(tmap.find(s[left])!=tmap.end())
+            {
+                smap[s[left]]--;
+                if(smap[s[left]]<tmap[s[start]])
+                break;
+            }            
+
+            left++;
+
+        }
+
+        return s.substr(start,length);          //finally we return answer string via the start index and length of the answer string
+    }
+};
