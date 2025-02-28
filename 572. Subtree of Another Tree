@@ -1,0 +1,73 @@
+/*
+572. Subtree of Another Tree
+
+Given the roots of two binary trees root and subRoot, return true if there is a subtree of root with the same structure and node values of subRoot and false otherwise.
+
+A subtree of a binary tree tree is a tree that consists of a node in tree and all of this node's descendants. The tree tree could also be considered as a subtree of itself.
+
+ 
+
+Example 1:
+Input: root = [3,4,5,1,2], subRoot = [4,1,2]
+Output: true
+
+Example 2:
+Input: root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]
+Output: false
+ 
+
+Constraints:
+
+The number of nodes in the root tree is in the range [1, 2000].
+The number of nodes in the subRoot tree is in the range [1, 1000].
+-104 <= root.val <= 104
+-104 <= subRoot.val <= 104*/
+
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+
+
+class Solution {
+public:
+    bool isSameTree(TreeNode* p,TreeNode* q)
+    {
+        if(p==nullptr&&q==nullptr) return true;         //both are nullptr
+        else if(p==nullptr||q==nullptr) return false;       //one of them is nullptr
+        else
+        return p->val==q->val && isSameTree(p->left,q->left) && isSameTree(p->right,q->right); //we compare values and recursively compare left and right subtrees of p and q
+    }
+
+
+    void dfs(TreeNode* r,TreeNode* s,bool& ans)
+    {
+        if(r==nullptr||ans==true)               //if nullptr or if ans=true,we return
+        return;
+
+        dfs(r->left,s,ans);                     //dfs of child nodes
+        dfs(r->right,s,ans);
+
+        bool a=isSameTree(r,s);                 //we check if r and s are same trees and put result in ans
+        if(a==true)
+        ans=a;
+    }
+
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+        if(subRoot==nullptr) return true;                       //since nullptr is subtree of every tree
+        else if(root==nullptr&&subRoot!=nullptr) return false;      //subRoot can't be subtree of a nullptr
+
+        bool ans=false;
+        dfs(root,subRoot,ans);      //dfs of root node
+        return ans;
+    }
+};
