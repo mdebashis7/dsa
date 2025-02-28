@@ -1,0 +1,63 @@
+/*
+206. Reverse Linked List
+
+Given the head of a singly linked list, reverse the list, and return the reversed list.
+ 
+
+Example 1:
+
+Input: head = [1,2,3,4,5]
+Output: [5,4,3,2,1]
+
+Example 2:
+
+Input: head = [1,2]
+Output: [2,1]
+
+Example 3:
+
+Input: head = []
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the list is the range [0, 5000].
+-5000 <= Node.val <= 5000
+ 
+
+Follow up: A linked list can be reversed either iteratively or recursively. Could you implement both?
+*/
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        if(head==nullptr) return head;
+        ListNode* prev=nullptr, *h=head, *ans=head,*next=head;      //prev stores previous node,h stores current node and next stores the next node. ans stores the last node which serves as head for reversed list
+
+        while(h!=nullptr)
+        {
+            next=h->next;               //to store next node for traversal
+            h->next=prev;               //to reverse the link from prev node to current node
+            prev=h;                     //stores current node as previous node for next iteration
+
+            if(next==nullptr)
+            ans=h;                      //if next is nullptr ,it marks end of list so it is stored as head of reverse list
+            
+            h=next;                         //traverses to next node
+        }
+
+        return ans;
+    }
+};
