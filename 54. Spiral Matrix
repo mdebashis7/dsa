@@ -1,0 +1,64 @@
+/*
+54. Spiral Matrix
+
+Given an m x n matrix, return all elements of the matrix in spiral order.
+
+ 
+
+Example 1:
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [1,2,3,6,9,8,7,4,5]
+
+Example 2:
+
+Input: matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+Output: [1,2,3,4,8,12,11,10,9,5,6,7]
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 10
+-100 <= matrix[i][j] <= 100*/
+
+
+
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        vector<int> ans;                            //ans vector
+        int m=matrix.size(),n=matrix[0].size();        //dimensions of matrix
+        int u=0,d=m-1,l=0,r=n-1;                     //indexes to mark upper,lower,left and right layers of matrix
+
+        while(ans.size()<(m*n))                 //since max size of matrix is m*n
+        {
+            for(int j=l;j<=r;j++)               //upper layer elements are pushed
+            ans.push_back(matrix[u][j]);            
+
+            u++;                                //updation of upper index
+
+            if(ans.size()<(m*n))
+            for(int j=u;j<=d;j++)               //right layer elements are pushed
+            ans.push_back(matrix[j][r]);
+
+            r--;                                //updation of right index
+
+            if(ans.size()<(m*n))
+            for(int j=r;j>=l;j--)               //lower layer elements are pushed
+            ans.push_back(matrix[d][j]);
+
+            d--;                                //updation of lower index
+
+
+            if(ans.size()<(m*n))
+            for(int j=d;j>=u;j--)               //left layer elements are pushed
+            ans.push_back(matrix[j][l]);
+            
+            l++;                                //updation of left index
+        }
+
+        return ans;
+    }
+};
