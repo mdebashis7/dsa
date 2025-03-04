@@ -1,0 +1,71 @@
+/*
+39. Combination Sum
+
+Given an array of distinct integers candidates and a target integer target, return a list of all unique combinations of candidates where the chosen numbers sum to target. You may return the combinations in any order.
+
+The same number may be chosen from candidates an unlimited number of times. Two combinations are unique if the frequency of at least one of the chosen numbers is different.
+
+The test cases are generated such that the number of unique combinations that sum up to target is less than 150 combinations for the given input.
+
+ 
+
+Example 1:
+
+Input: candidates = [2,3,6,7], target = 7
+Output: [[2,2,3],[7]]
+Explanation:
+2 and 3 are candidates, and 2 + 2 + 3 = 7. Note that 2 can be used multiple times.
+7 is a candidate, and 7 = 7.
+These are the only two combinations.
+
+Example 2:
+
+Input: candidates = [2,3,5], target = 8
+Output: [[2,2,2,2],[2,3,3],[3,5]]
+
+Example 3:
+
+Input: candidates = [2], target = 1
+Output: []
+ 
+
+Constraints:
+
+1 <= candidates.length <= 30
+2 <= candidates[i] <= 40
+All elements of candidates are distinct.
+1 <= target <= 40*/
+
+
+class Solution {
+public:
+    void func(vector<int>& candidates,vector<int>& v,int i,int& sum,vector<vector<int>>& ans,int& target)//backtracking function
+    {
+        if(sum==target)                 //if sum=target, put it inside ans
+        {
+            ans.push_back(v);
+            return;
+        }
+        else if(i>=candidates.size()||sum>target)       //if index if >=candidates.size() or sum>target, do nothing and return
+        return;
+        else
+        {
+                                            //else branch out into 2 cases.1st case is by including the number at ith index.so we push it into v and add it to sum. 2nd branch is without the number so we do that by popping off the number from v and subtracting it from sum
+
+            v.push_back(candidates[i]);             
+            sum+=candidates[i];
+            func(candidates,v,i,sum,ans,target);
+            
+            v.pop_back();
+            sum-=candidates[i];
+            func(candidates,v,i+1,sum,ans,target);
+        }
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>> ans;                //ans vector
+        vector<int> v;                          //vector to hold combination
+        int ind=0,sum=0;                        //ind stores which index of candidates to put inside v and sum holds sum of the numbers inside v
+        func(candidates,v,ind,sum,ans,target);  
+        return ans;
+    }
+};
