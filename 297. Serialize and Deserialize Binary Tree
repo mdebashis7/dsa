@@ -1,0 +1,138 @@
+/*
+
+297. Serialize and Deserialize Binary Tree
+
+
+Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.
+
+Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.
+
+Clarification: The input/output format is the same as how LeetCode serializes a binary tree. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.
+
+Example 1:
+
+
+Input: root = [1,2,3,null,null,4,5]
+Output: [1,2,3,null,null,4,5]
+
+Example 2:
+
+Input: root = []
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 104].
+-1000 <= Node.val <= 1000
+*/
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string ans="";              //answer string to be returned.the idea is to do preorder traversal including nullptrs and adding the node values as strings to ans string
+
+        queue<TreeNode*> q;         //queue for BFS
+        q.push(root);               //we push the root node
+
+        while(!q.empty())
+        {
+            auto node=q.front();                
+            q.pop();
+
+            if(node==nullptr)               //we append "n" to ans string if node is nullptr
+            ans+="n";
+            else
+            ans+=to_string(node->val);      //else we append value to node to ans string
+
+            ans+=",";
+
+            if(node!=nullptr)
+            {
+                q.push(node->left);         //finally we add left and right subtrees to queue for BFS
+                q.push(node->right);
+            }
+        }
+        return ans;                         //ans string returned
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        vector<string> v;                   //we convert the string to a vector of node values if not nullptrs and "n" if nullptrs and store them here in order
+
+        string s="";                        //to store current node value in form of string
+
+        for(int i=0;i<data.size();i++)
+        {
+            if(data[i]==',')                //means next character is separate from current string node value s
+            {
+                v.push_back(s);
+                s="";
+            }
+            else
+            s+=data[i];                     //else this character needs to be included in s
+        }
+
+        vector<TreeNode*> nodes;            //we create nodes from the node values and store here in order
+
+        TreeNode* ans=nullptr;
+
+        for(auto i:v)
+        {
+            if(i=="n")
+            nodes.push_back(nullptr);           //since n denotes nullptr
+            else
+            {
+                auto n=new TreeNode(stoi(i));   //this denotes a node with value as in v
+                nodes.push_back(n);
+            }
+        }
+        
+        ans=nodes[0];                           //since root node apppears first at index 0
+
+        queue<TreeNode*> q;                     //we do BFS to assign nodes their children,we push root node to queue
+        q.push(ans); 
+
+        int c=1;                                //this variable denotes which node is assigned as left/right subtree
+
+        while(!q.empty())
+        {
+            auto x=q.front();
+            q.pop();
+
+            if(c<nodes.size())                          //ensures the subtree exists inside nodes before assigning
+            {
+                x->left=nodes[c];                       //assigns cth node as left subtree and if its not nullptr,it is appended to queue.then c is updated
+                if(nodes[c]!=nullptr) q.push(nodes[c]);
+                c++;
+            }
+
+            if(c<nodes.size())                          //ensures the subtree exists inside nodes before assigning
+            {
+                x->right=nodes[c];                         //assigns cth node as right subtree and if its not nullptr,it is appended to queue.then c is updated
+                if(nodes[c]!=nullptr) q.push(nodes[c]);
+                c++;
+            }
+        }        
+
+        return ans;                     //root node is returned
+    }
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec ser, deser;
+// TreeNode* ans = deser.deserialize(ser.serialize(root));
