@@ -1,0 +1,80 @@
+/*
+207. Course Schedule
+
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses. Otherwise, return false.
+
+ 
+
+Example 1:
+
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: true
+Explanation: There are a total of 2 courses to take. 
+To take course 1 you should have finished course 0. So it is possible.
+
+Example 2:
+
+Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+Output: false
+Explanation: There are a total of 2 courses to take. 
+To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+ 
+
+Constraints:
+
+1 <= numCourses <= 2000
+0 <= prerequisites.length <= 5000
+prerequisites[i].length == 2
+0 <= ai, bi < numCourses
+All the pairs prerequisites[i] are unique.*/
+
+
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<unordered_set<int>> pre(numCourses),post(numCourses);    
+        
+        //pre maps a course to its prerequisites while post shows a particular course is prequisite to which courses 
+
+        for(auto v:prerequisites)
+        {
+            pre[v[0]].insert(v[1]);
+            post[v[1]].insert(v[0]);
+        }
+
+        queue<int> q;                           //queue for BFS
+        unordered_set<int> finished,visited;        //finished stores finished courses and visited stores whicg courses are added to queue
+
+        for(auto i=0;i<pre.size();i++)          //those couses are added with no prerequisites
+        if(pre[i].size()==0)
+        {
+            q.push(i);
+            visited.insert(i);
+        }
+
+        while(!q.empty())
+        {
+            auto x=q.front();               //we pop a course and put it in finished
+            q.pop();
+
+            finished.insert(x);            
+
+            for(auto i:post[x])             //then we iterate across courses which can be completed after completing x i.e if they have no other prerequisites left.we push such courses to end of queue.
+            {
+                pre[i].erase(x);
+                if(pre[i].size()==0&&visited.find(i)==visited.end())
+                {
+                    q.push(i);visited.insert(i);
+                }
+            }
+        }
+
+        if(finished.size()==numCourses) return true;        //if all courses are finished
+        else return false;
+
+
+    }
+};
