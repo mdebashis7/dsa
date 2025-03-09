@@ -1,0 +1,114 @@
+/*
+208. Implement Trie (Prefix Tree)
+
+A trie (pronounced as "try") or prefix tree is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.
+
+Implement the Trie class:
+
+Trie() Initializes the trie object.
+void insert(String word) Inserts the string word into the trie.
+boolean search(String word) Returns true if the string word is in the trie (i.e., was inserted before), and false otherwise.
+boolean startsWith(String prefix) Returns true if there is a previously inserted string word that has the prefix prefix, and false otherwise.
+ 
+
+Example 1:
+
+Input
+["Trie", "insert", "search", "search", "startsWith", "insert", "search"]
+[[], ["apple"], ["apple"], ["app"], ["app"], ["app"], ["app"]]
+Output
+[null, null, true, false, true, null, true]
+
+Explanation
+Trie trie = new Trie();
+trie.insert("apple");
+trie.search("apple");   // return True
+trie.search("app");     // return False
+trie.startsWith("app"); // return True
+trie.insert("app");
+trie.search("app");     // return True
+ 
+
+Constraints:
+
+1 <= word.length, prefix.length <= 2000
+word and prefix consist only of lowercase English letters.
+At most 3 * 104 calls in total will be made to insert, search, and startsWith.*/
+
+
+class Trie {
+public:
+    struct node
+    {
+        char ch;                        //stores character
+        unordered_map<char,node*> mp;   //stores next linked characters if present
+        bool isLeaf=false;              //stores if word path from root till the node is a word
+    };
+
+    node* root;
+    Trie() { root= new node();root->ch='/';}        //initializes root node
+    
+    void insert(string word) {
+        auto n=root;
+        int i=0;                                        //index variable
+
+        //we iterate through word indexes and if next character is not linked to current character in trie, we create a node else we traverse through the node
+        while(i<word.size())                            
+        {
+            if(n->mp.find(word[i])==n->mp.end())
+            {
+                n->mp[word[i]]=new node();
+                n->mp[word[i]]->ch=word[i];
+
+            }
+            
+            n=n->mp[word[i]];
+            i++;            
+        }
+        n->isLeaf=true;         //at last we mark isLeaf true,to mark presence of word in thr trie from root to current node
+    }
+    
+    bool search(string word) {
+        auto n=root;
+        int i=0;
+
+        //we traverse through characters of string and that through nodes as well in trie.if in any case next node isnt found,we return false,else we iterate downwards
+        while(i<word.size())
+        {
+            if(n->mp.find(word[i])==n->mp.end())
+            {
+               return false;
+            }
+            
+            n=n->mp[word[i]];
+            i++;            
+        }
+        if(n->isLeaf==true) return true;            //if word exists,then isLeaf needs to be true for last node
+        else return false;
+    }
+    
+    bool startsWith(string prefix) {
+        //same as search() but here isLeaf flag isn't required to be true since we are checking only prefix
+        auto n=root;
+        int i=0;
+        while(i<prefix.size())
+        {
+            if(n->mp.find(prefix[i])==n->mp.end())
+            {
+               return false;
+            }
+            
+            n=n->mp[prefix[i]];
+            i++;            
+        }
+        return true;
+    }
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
