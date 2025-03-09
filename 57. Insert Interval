@@ -42,84 +42,36 @@ public:
     {
         if(intervals.size()==0)             //intervals is empty,so return newInterval within a vector
         return {newInterval};
+
+        vector<vector<int>> ans;            //ans vector
+        int i=0;                            //index variable
+
+        while(i<intervals.size()&&newInterval[0]>intervals[i][1])       //push intervals before merging starts
+        {
+            ans.push_back(intervals[i]);
+            i++;
+        }
+
+        if(i<intervals.size()&&newInterval[1]>=intervals[i][0])             //this is done to make sure newInterval merges with intervals[i].if false,it means,new interval is inserted between the intervals. else we go through the process of merging intervals
+        while(i<intervals.size())
+        {
+            newInterval[0]=min(newInterval[0],intervals[i][0]);             //lower bound
+            newInterval[1]=max(newInterval[1],intervals[i][1]);             //upper bound
+            i++;        
+            if(i<intervals.size()&&newInterval[1]<intervals[i][0]) break;   //if upper bound is less than starting point of next interval,break
+        }
+
+        ans.push_back(newInterval);             //insert new (merged) interval
+
+        while(i<intervals.size())               //insert rest of intervals after merged interval
+        {
+            ans.push_back(intervals[i]);
+            i++;
+        }
+
+        return ans;                             //return ans vector
+
         
-        else if(newInterval[0]<intervals[0][0] && newInterval[1]<intervals[0][0])   //newInterval should be inserted before 1st interval
-        {
-            intervals.insert(intervals.begin(),newInterval);
-            return intervals;
-        }
-        else if(newInterval[0]>intervals.back()[1])         //newInterval should be insert after last interval
-        {
-            intervals.push_back(newInterval);
-            return intervals;
-        }
-        else
-        {
-
-            for(int i=1;i<intervals.size();i++)     //this case is executed if the newInterval falls between 2 intervals.The new Interval is inserted at that position and intervals is returned
-            {    if(newInterval[0]<intervals[i][0]&&newInterval[1]<intervals[i][0]&&newInterval[0]>intervals[i-1][1])
-                {
-                    intervals.insert(intervals.begin()+i,newInterval);
-                    return intervals;
-                }
-            }
-
-            
-            //this case is the worst case where we need to merge intervals
-                vector<vector<int>> ans;                //new ans vector to be returned
-
-                int start=INT_MAX,end=INT_MAX;          //denotes the indexes between which merging needs to be done
-
-                for(int i=0;i<intervals.size();i++)
-                {
-                    //here start of new interval falls between intervals
-                    if((i==0 && newInterval[0]<intervals[i][0])||(i>0&&newInterval[0]>intervals[i-1][1] &&newInterval[0]<intervals[i][0]))
-                    {
-                        start=i;
-                    
-                        break;
-                    }
-                    //here start of new interval falls within an interval
-                    if(newInterval[0]>=intervals[i][0] && newInterval[0]<=intervals[i][1])
-                    {
-                        start=i;break;
-                    }
-                }
-
-                for(int i=0;i<start;i++)            //we insert all intervals upto start inside ans
-                    ans.push_back(intervals[i]);
-
-                int a,b;                                    //stores upper bound and lower bound of merged interval
-
-                for(int i=start;i<intervals.size();i++)
-                {
-                    a=min(newInterval[0],intervals[start][0]);          //stores lower bound of interval at start index and new interval
-
-                    if(newInterval[1]<=intervals[i][1])                 //means upper bound is upper bound of intervals[i]
-                    {
-                        b=intervals[i][1];end=i+1;break;
-                    }
-                    else if(newInterval[1]>intervals[i][1]&&i+1<intervals.size()&&newInterval[1]<intervals[i+1][0]) //means upper bound is upper bound of new Interval
-                    {
-                        b=newInterval[1];end=i+1;break;
-                    }
-                    else if(newInterval[1]>intervals[i][1]&&i+1==intervals.size())      //means upper bound is upper bound of new Interval
-                    {
-                        b=newInterval[1];end=i+1;break;
-                    }
-                    else continue;          //means next interval isto be considered for above operations
-                }
-
-
-                ans.push_back({a,b});           //merging is done 
-
-                for(int i=end;i<intervals.size();i++)           //intervals from end index are inserted as they are.
-                    ans.push_back(intervals[i]);
-
-                return ans;         //ans vector is returned
-            
-        }
-
-        return {};          //if all cases fail...its unreachable
+        
     }
 };
