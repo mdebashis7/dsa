@@ -1,0 +1,72 @@
+/*
+139. Word Break
+
+Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+Note that the same word in the dictionary may be reused multiple times in the segmentation.
+
+ 
+
+Example 1:
+
+Input: s = "leetcode", wordDict = ["leet","code"]
+Output: true
+Explanation: Return true because "leetcode" can be segmented as "leet code".
+
+Example 2:
+
+Input: s = "applepenapple", wordDict = ["apple","pen"]
+Output: true
+Explanation: Return true because "applepenapple" can be segmented as "apple pen apple".
+Note that you are allowed to reuse a dictionary word.
+
+Example 3:
+
+Input: s = "catsandog", wordDict = ["cats","dog","sand","and","cat"]
+Output: false
+ 
+
+Constraints:
+
+1 <= s.length <= 300
+1 <= wordDict.length <= 1000
+1 <= wordDict[i].length <= 20
+s and wordDict[i] consist of only lowercase English letters.
+All the strings of wordDict are unique.*/
+
+
+class Solution {
+public:
+    
+    bool wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> dict;         //to make finding O(1), of words in wordDict
+        
+        for(auto str:wordDict)              //we insert words of wordDict in hashset dict
+        dict.insert(str);
+
+        vector<bool> dp(s.size(),false);    //we create dp array of bools to store if upto that index s can be segmented into a space-separated sequence of one or more dictionary words
+
+        for(int right=0;right<s.size();right++) //we iterate through right boundaries
+        {
+            for(int left=0;left<=right;left++)  //we iterate the left boundary from 0 upto i
+            {
+                //if left==0 means we mean word from starting
+                //dp[left-1] means upto index left-1,s can be segmented into separate words using words from dict
+
+                if( (left>0 && dp[left-1]) || left==0)       
+                {
+                    string str=s.substr(left,right-left+1);     //we create string from the left boundary upto i
+                    
+                    //if it belongs to hashset,then upto right index s can be segmented
+
+                    if(dict.find(str)!=dict.end())          
+                    dp[right]=true;
+                }
+            }
+        }
+
+
+        return dp.back();   //we return last value of dp,since it means entire string s can be segmented
+
+    }
+};
