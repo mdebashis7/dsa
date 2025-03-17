@@ -53,14 +53,23 @@ Constraints:
 class Solution {
 public:
     int removeElement(vector<int>& nums, int val) {
-        auto itr=find(nums.begin(),nums.end(),val);     //iterator pointing to first occurence of val
+        int i=0,j=0;            
 
-        while(itr!=nums.end())                  //if val exists
+        //with i we iterate through elements of nums
+        //we store nums[i](!=val) at index j;
+
+        while(i<nums.size())                 
         {
-            nums.erase(itr);                        //erases first occurence of val
-            itr=find(nums.begin(),nums.end(),val);  //iterator pointing to first occurence of val
+            if(nums[i]==val)
+            i++;
+            else
+            {
+                nums[j]=nums[i];
+                i++;
+                j++;
+            }
         }
 
-        return nums.size();             //returns no. of elements not equal to val
+        return j;             //returns no. of elements not equal to val
     }
 };
