@@ -1,0 +1,81 @@
+/*
+42. Trapping Rain Water
+
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
+
+ 
+
+Example 1:
+
+
+Input: height = [0,1,0,2,1,0,1,3,2,1,2,1]
+Output: 6
+Explanation: The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.
+
+Example 2:
+
+Input: height = [4,2,0,3,2,5]
+Output: 9
+ 
+
+Constraints:
+
+n == height.length
+1 <= n <= 2 * 104
+0 <= height[i] <= 105*/
+
+
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        //remove zero height bars from either sides as they wont hold any water
+        while(height.size()!=0&&height.back()==0)
+        height.pop_back();
+
+        reverse(height.begin(),height.end());
+
+        while(height.size()!=0&&height.back()==0)
+        height.pop_back();
+
+        reverse(height.begin(),height.end());
+
+        //ans stores total water,curr stores water in current puddle
+
+        int ans=0,curr=0,m=height[0];
+
+        //we traverse heights from left to right.we assume left boundary to be smaller than right boundary so puddle stores water of height of left boundary in curr.whenever we encounter a bar taller than left boundary,we add curr to ans thus closing the puddle,and assume the new taller bar to be left boundary and traverse left to right in same way as before. m stores left boundary(smaller)
+
+        for(int i=1;i<height.size();i++)
+        {
+            if(height[i]<m)
+            curr+=(m-height[i]);
+            else
+            {
+                ans+=curr;
+                m=height[i];
+                curr=0;
+            }
+        }
+
+        //if the next taller bar doesnt come and curr!=0,it means,we have some unadded water from curr to ans.but this curr is based on taller boundary on left which is physically impossible. So we have to traverse upto that point from right to left and follow same method as before
+        if(curr!=0)
+        {
+            curr=0;
+            int n=height.size(),M=height.back(); //M stores right bounday(smaller)
+            for(int i=n-2;i>=0;i--)
+            {
+                if(height[i]<M)
+                curr+=(M-height[i]);
+                else
+                {
+                    ans+=curr;
+                    M=height[i];
+                    curr=0;
+                    if(M==m)break;          
+                }
+            }
+        }
+
+        return ans;
+    }
+};
