@@ -1,0 +1,166 @@
+/*
+68. Text Justification
+
+Given an array of strings words and a width maxWidth, format the text such that each line has exactly maxWidth characters and is fully (left and right) justified.
+
+You should pack your words in a greedy approach; that is, pack as many words as you can in each line. Pad extra spaces ' ' when necessary so that each line has exactly maxWidth characters.
+
+Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line does not divide evenly between words, the empty slots on the left will be assigned more spaces than the slots on the right.
+
+For the last line of text, it should be left-justified, and no extra space is inserted between words.
+
+Note:
+
+A word is defined as a character sequence consisting of non-space characters only.
+Each word's length is guaranteed to be greater than 0 and not exceed maxWidth.
+The input array words contains at least one word.
+ 
+
+Example 1:
+
+Input: words = ["This", "is", "an", "example", "of", "text", "justification."], maxWidth = 16
+Output:
+[
+   "This    is    an",
+   "example  of text",
+   "justification.  "
+]
+
+Example 2:
+
+Input: words = ["What","must","be","acknowledgment","shall","be"], maxWidth = 16
+Output:
+[
+  "What   must   be",
+  "acknowledgment  ",
+  "shall be        "
+]
+Explanation: Note that the last line is "shall be    " instead of "shall     be", because the last line must be left-justified instead of fully-justified.
+Note that the second line is also left-justified because it contains only one word.
+
+Example 3:
+
+Input: words = ["Science","is","what","we","understand","well","enough","to","explain","to","a","computer.","Art","is","everything","else","we","do"], maxWidth = 20
+Output:
+[
+  "Science  is  what we",
+  "understand      well",
+  "enough to explain to",
+  "a  computer.  Art is",
+  "everything  else  we",
+  "do                  "
+]
+ 
+
+Constraints:
+
+1 <= words.length <= 300
+1 <= words[i].length <= 20
+words[i] consists of only English letters and symbols.
+1 <= maxWidth <= 100
+words[i].length <= maxWidth*/
+
+
+class Solution {
+public:
+    vector<string> fullJustify(vector<string>& words, int maxWidth) {
+        vector<string> curr,ans;                //to store set of words in current sentence ans answer vector to store justified strings
+        int width=0;                            //stores precalculated width
+
+        for(int i=0;i<words.size();i++)                 //we iterate through the words
+        {
+            //The first word has to be entered without prefixing it with space,So thats why i>0
+
+            //if width+1+size of current word exceeds maxWidth, we go for justification. here 1 is the least amount os space i.e. 1 between words
+            if(i>0&&width+1+words[i].size()>maxWidth)
+            {               
+
+                if(curr.size()!=1)                      //if there are multiple words in the sentence
+                {
+                    int w=0;                            //stores actual width without calculating 1 space in-between
+                    
+                    for(int j=0;j<curr.size();j++)
+                        w+=((int)curr[j].size());
+
+                    int totspaces=maxWidth-w;                   //total spaces for justication
+                    int spaces=totspaces/((int)curr.size()-1);  //min spaces to be put in between words
+                    int sp=totspaces % ((int)curr.size()-1);       //extra spaces to be put from left to right 
+
+                    string str="";                  //stores justifies string
+
+                    for(int j=0;j<curr.size();j++)      //we iterate throught the words
+                    {
+                        str+=curr[j];                   //add the word to the string
+
+                        for(int k=0;k<spaces;k++)       //add the min spaces to the string
+                        str+=' ';
+
+                        if(sp>0)                        //if extra spaces are there,put one of them
+                        {
+                            str+=' ';
+                            sp--;
+                        }
+                    }
+
+                    while(str.size()>0&&str.back()==' ')        //delete extra spaces from end of string
+                        str.pop_back();
+
+                    while(str.size()<maxWidth)                  //if length is less than maxWidth,add spaces to end of string
+                        str+=' ';
+
+                    ans.push_back(str);             //push the string into ans vector
+                }
+                else                    
+                {
+                    //here there is only 1 word to be put in string.we left justify it and add spaces to the end
+                    string str=curr[0];
+
+                    while(str.size()<maxWidth)
+                        str+=' ';
+
+                    ans.push_back(str);
+                }              
+                
+                //we clear current words and restore width to 0
+                curr.clear();
+                width=0;
+
+                //put new word into the curr set of words
+                curr.push_back(words[i]);
+                width+=((int)words[i].size());
+            }
+            else
+            {
+                //if width is <=maxWidth,we go on putting words into the curr vector and precalculate width as well
+                if(curr.size()!=0)                  //no words,so no space required so no +1
+                width+=(1+(int)words[i].size());
+                else                                   //there exists a word before,so +1 required for space
+                width+=((int)words[i].size());
+
+                curr.push_back(words[i]);
+            }
+        }
+
+        //for last set of words,it needs to be left justified
+        if(curr.size()!=0)
+        {
+            string str="";
+            for(int j=0;j<curr.size();j++)      //we add words to the string with 1 space in-between
+            {
+                str+=curr[j];
+                str+=' ';
+            }
+
+            //then make sure the stirng has maxWidth characters and then push it into ans vector
+            while(str.size()>0&&str.back()==' ')
+                str.pop_back();
+
+            while(str.size()<maxWidth)
+                str+=' ';
+
+            ans.push_back(str);
+        }
+
+        return ans;
+    }
+};
