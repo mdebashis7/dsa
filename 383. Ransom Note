@@ -1,0 +1,51 @@
+/*
+383. Ransom Note
+
+Given two strings ransomNote and magazine, return true if ransomNote can be constructed by using the letters from magazine and false otherwise.
+
+Each letter in magazine can only be used once in ransomNote.
+
+ 
+
+Example 1:
+
+Input: ransomNote = "a", magazine = "b"
+Output: false
+Example 2:
+
+Input: ransomNote = "aa", magazine = "ab"
+Output: false
+Example 3:
+
+Input: ransomNote = "aa", magazine = "aab"
+Output: true
+ 
+
+Constraints:
+
+1 <= ransomNote.length, magazine.length <= 105
+ransomNote and magazine consist of lowercase English letters.*/
+
+class Solution {
+public:
+    bool canConstruct(string ransomNote, string magazine) {
+        unordered_map<char,int> hashmap;
+
+        //we store characters of magazine and their frequencies in hashmap
+        for(auto c:magazine)
+        hashmap[c]++;
+
+        //then we decrease frequency of characters in ransomNote from hashmap
+        for(auto c:ransomNote)
+        {
+            //if character isnt found or frequency of a character is more in ransomNote return false
+            if(hashmap.find(c)!=hashmap.end()&&hashmap[c]!=0)
+            hashmap[c]--;
+            else return false;
+        }
+
+        return true;    //else return true
+
+
+    }
+};
