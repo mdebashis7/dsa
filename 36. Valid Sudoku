@@ -1,0 +1,163 @@
+/*
+36. Valid Sudoku
+
+Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
+
+Each row must contain the digits 1-9 without repetition.
+Each column must contain the digits 1-9 without repetition.
+Each of the nine 3 x 3 sub-boxes of the grid must contain the digits 1-9 without repetition.
+Note:
+
+A Sudoku board (partially filled) could be valid but is not necessarily solvable.
+Only the filled cells need to be validated according to the mentioned rules.
+ 
+
+Example 1:
+
+
+Input: board = 
+[["5","3",".",".","7",".",".",".","."]
+,["6",".",".","1","9","5",".",".","."]
+,[".","9","8",".",".",".",".","6","."]
+,["8",".",".",".","6",".",".",".","3"]
+,["4",".",".","8",".","3",".",".","1"]
+,["7",".",".",".","2",".",".",".","6"]
+,[".","6",".",".",".",".","2","8","."]
+,[".",".",".","4","1","9",".",".","5"]
+,[".",".",".",".","8",".",".","7","9"]]
+Output: true
+Example 2:
+
+Input: board = 
+[["8","3",".",".","7",".",".",".","."]
+,["6",".",".","1","9","5",".",".","."]
+,[".","9","8",".",".",".",".","6","."]
+,["8",".",".",".","6",".",".",".","3"]
+,["4",".",".","8",".","3",".",".","1"]
+,["7",".",".",".","2",".",".",".","6"]
+,[".","6",".",".",".",".","2","8","."]
+,[".",".",".","4","1","9",".",".","5"]
+,[".",".",".",".","8",".",".","7","9"]]
+Output: false
+Explanation: Same as Example 1, except with the 5 in the top left corner being modified to 8. Since there are two 8's in the top left 3x3 sub-box, it is invalid.
+ 
+
+Constraints:
+
+board.length == 9
+board[i].length == 9
+board[i][j] is a digit 1-9 or '.'.
+*/
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        unordered_set<char> s;  
+        //first we check if any rows have repeated elements.if they do,we return false
+        for(int i=0;i<9;i++)
+        {
+            s.clear();
+            for(int j=0;j<9;j++)
+            if(board[i][j]!='.')
+            {
+                if(s.find(board[i][j])==s.end())
+                s.insert(board[i][j]);
+                else
+                return false;
+            }
+        }
+
+        //then we check if any columns have repeated elements.if they do,we return false
+        for(int i=0;i<9;i++)
+        {
+            s.clear();
+            for(int j=0;j<9;j++)
+            if(board[j][i]!='.')
+            {
+                if(s.find(board[j][i])==s.end())
+                s.insert(board[j][i]);
+                else
+                return false;
+            }
+        }
+
+        //at last we check if 9 mini squares have repaeated elements.the respective elements are stored in vector of hashsets
+        vector<unordered_set<char>> v(9);
+        for(int i=0;i<9;i++)
+        {
+            for(int j=0;j<9;j++)
+            {
+                if(board[i][j]=='.') continue;
+                if(i<3)
+                {
+                    if(j<3)
+                    {
+                        if(v[0].find(board[i][j])==v[0].end())
+                        v[0].insert(board[i][j]);
+                        else return false;
+                    }
+                    else if(j<6)
+                    {                        if(v[1].find(board[i][j])==v[1].end())
+                        v[1].insert(board[i][j]);
+                        else return false;
+
+                    }
+                    else
+                    {
+                                                if(v[2].find(board[i][j])==v[2].end())
+                        v[2].insert(board[i][j]);
+                        else return false;
+                    }
+
+                }
+                else if(i<6)
+                {
+                    if(j<3)
+                    {
+                        if(v[3].find(board[i][j])==v[3].end())
+                        v[3].insert(board[i][j]);
+                        else return false;
+                    }
+                    else if(j<6)
+                    {                        if(v[4].find(board[i][j])==v[4].end())
+                        v[4].insert(board[i][j]);
+                        else return false;
+
+                    }
+                    else
+                    {
+                                                if(v[5].find(board[i][j])==v[5].end())
+                        v[5].insert(board[i][j]);
+                        else return false;
+                    }
+
+                }
+                else
+                {
+                    if(j<3)
+                    {
+                        if(v[6].find(board[i][j])==v[6].end())
+                        v[6].insert(board[i][j]);
+                        else return false;
+                    }
+                    else if(j<6)
+                    {                        if(v[7].find(board[i][j])==v[7].end())
+                        v[7].insert(board[i][j]);
+                        else return false;
+
+                    }
+                    else
+                    {
+                                                if(v[8].find(board[i][j])==v[8].end())
+                        v[8].insert(board[i][j]);
+                        else return false;
+                    }
+
+                }
+            }
+        }
+        //else we return true
+        return true;
+
+
+    }
+};
