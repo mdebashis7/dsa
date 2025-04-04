@@ -1,0 +1,164 @@
+/*
+224. Basic Calculator
+
+Given a string s representing a valid expression, implement a basic calculator to evaluate it, and return the result of the evaluation.
+
+Note: You are not allowed to use any built-in function which evaluates strings as mathematical expressions, such as eval().
+
+ 
+
+Example 1:
+
+Input: s = "1 + 1"
+Output: 2
+Example 2:
+
+Input: s = " 2-1 + 2 "
+Output: 3
+Example 3:
+
+Input: s = "(1+(4+5+2)-3)+(6+8)"
+Output: 23
+ 
+
+Constraints:
+
+1 <= s.length <= 3 * 105
+s consists of digits, '+', '-', '(', ')', and ' '.
+s represents a valid expression.
+'+' is not used as a unary operation (i.e., "+1" and "+(2 + 3)" is invalid).
+'-' could be used as a unary operation (i.e., "-1" and "-(2 + 3)" is valid).
+There will be no two consecutive operators in the input.
+Every number and running calculation will fit in a signed 32-bit integer.*/
+
+
+class Solution {
+public:
+    int calculate(string s) {
+        //we first remove spaces from string s by storing non-space characters in str and then reassigning str to s
+        string str="";
+        for(auto c:s)
+        {
+            if(c!=' ')
+            str+=c;
+        }
+        s=str;
+
+        vector<string> v;   //stores operands and operators in form of strings
+        
+        str="";             //holds current operand
+
+        for(int i=0;i<s.size();)
+        {
+            auto c=s[i];
+
+            if(c>='0'&&c<='9')              //means start of an operand is encountered
+            {
+                //we expand right boundary j of the operand and store the digits in str.when a '('or ')' or an  operator is encountered,the boundary j stops expanding
+                int j=i;
+                for(;j<s.size();j++)
+                {
+                    if(s[j]>='0'&&s[j]<='9')
+                    str+=s[j];
+                    else break;
+                }
+
+                //if it is first operand i.e. of the whole expression or first operand after an opening '(', we push the operand into v
+                if(v.size()==0||v.back()=="(") v.push_back(str);
+                else
+                {
+                    //then we know it is second operand.so we store the operator in op,first operand in a and second operand in b, carry out the operation and store the answer in v 
+                    int a=stoi(v[v.size()-2]),b=stoi(str);
+                    string op=v.back();
+
+                    v.pop_back();v.pop_back();
+
+                    if(op=="+") v.push_back(to_string(a+b));
+                    else if(op=="-") v.push_back(to_string(a-b));
+                    else if(op=="*") v.push_back(to_string(a*b));
+                    else if(op=="/") v.push_back(to_string(a/b)); 
+                }
+                //we update i to index after end digit of the operand and str to empty string
+                i=j;
+                str="";
+                continue;
+            }
+            else if(c=='(')
+            {
+                //we push c into v and update i
+                v.push_back("(");
+                i++;
+            }
+            else if(c==')')
+            {
+                //when closing parentheses is encountered,we check if the 2nd last entry in v is the opening parentheses.we then remove it from v and just store the operand in between the parentheses
+                if(v[v.size()-2]=="(")
+                {
+                    swap(v.back(),v[v.size()-2]);
+                    v.pop_back();
+                }
+                //then we check if the just entered operand is 1st operand or 2nd operand.if it is first operand,we continue with next iteration
+                if(v.size()>=2&&v[v.size()-2]=="(")
+                {
+                    i++;continue;
+                }
+
+                //else if it is the 2nd operand,we store the operator in op,first operand in a and second operand in b, carry out the operation and store the answer in v
+                if(v.size()>=3)
+                {
+                    int a=stoi(v[v.size()-3]),b=stoi(v[v.size()-1]);
+                    string op=v[v.size()-2];
+
+                    v.pop_back();v.pop_back();v.pop_back();
+
+                    if(op=="+") v.push_back(to_string(a+b));
+                    else if(op=="-") v.push_back(to_string(a-b));
+                    else if(op=="*") v.push_back(to_string(a*b));
+                    else if(op=="/") v.push_back(to_string(a/b)); 
+                }
+                //move on to next character
+                i++;
+            }
+            else if(c=='-')
+            {
+                //if '-' is unary,we add a "0" to v so make "0", 1st operand and unary '-', a binary '-' and the number associated with unary '-', the 2nd operand.
+                if(v.size()==0||v.back()=="(")
+                {
+                    v.push_back("0");
+                    v.push_back("-");
+                    i++;
+                }
+                else
+                {
+                    //we store it as binary operator and move on to next character
+                    v.push_back("-");
+                    i++;
+                }
+            }
+            else if(c=='+')
+            {
+                //we push c into v and update i
+                v.push_back("+");
+                i++;
+            }
+            else if(c=='*')
+            {
+                //we push c into v and update i
+                v.push_back("*");
+                i++;
+            }
+            else if(c=='/')
+            {
+                //we push c into v and update i
+                v.push_back("/");
+                i++;
+            }
+        }
+
+        if(v.size()==1)         //to ensure just the result is in v
+        return stoi(v[0]);
+        else return -1;
+
+        //note that,precedence of operators dont work here
+    }
+};
