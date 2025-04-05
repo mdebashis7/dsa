@@ -1,0 +1,97 @@
+/*
+2. Add Two Numbers
+
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+ 
+
+Example 1:
+
+
+Input: l1 = [2,4,3], l2 = [5,6,4]
+Output: [7,0,8]
+Explanation: 342 + 465 = 807.
+Example 2:
+
+Input: l1 = [0], l2 = [0]
+Output: [0]
+Example 3:
+
+Input: l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
+Output: [8,9,9,9,0,0,0,1]
+ 
+
+Constraints:
+
+The number of nodes in each linked list is in the range [1, 100].
+0 <= Node.val <= 9
+It is guaranteed that the list represents a number that does not have leading zeros.*/
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        auto h1=l1,h2=l2;   //we set up h1 and h2 for traversal across the lists
+
+        if(l1==nullptr&&l2==nullptr) return nullptr;    //if both are nullptrs,return nullptr
+        else if(l1==nullptr) return l2;             //if one of them is nullptr,return the other
+        else if(l2==nullptr) return l1;
+
+        int n1=0,n2=0;//else we count the no.of digits in each list
+        while(h1!=nullptr)
+        {
+            n1++;
+            h1=h1->next;
+        }
+        while(h2!=nullptr)
+        {
+            n2++;
+            h2=h2->next;
+        }
+
+        //if l2 has more digits than l2,we swap both as we are going to store the answer in the list with more digits i.e l1
+        if(n2>n1) swap(l1,l2);
+        h1=l1,h2=l2;
+
+        auto c=0;   //stores carry
+
+        while(h1!=nullptr)
+        {
+            if(h2!=nullptr)     //if h2 isnt nullptr,we add the digits and carry
+            {
+                h1->val+=(h2->val+c);
+                h2=h2->next;
+            }
+            else            //else we just add the digit in h1 and carry
+            h1->val+=c;
+
+            c=h1->val/10;       //we update carry for next digit and digit to be stored in current node
+            h1->val%=10;
+
+            if(h1->next!=nullptr)   //if next node is nullptr,we break as current node will be used if carry for next node!=0
+            h1=h1->next;
+            else break;
+            
+        }
+        while(c!=0)
+        {
+            //if carry!=0,we create new nodes at end of l1 until carry==0
+            h1->next=new ListNode(c%10);
+            c/=10;
+            h1=h1->next;
+        }
+
+        return l1;          //then we return l1 as answer list
+    }
+};
