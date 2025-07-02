@@ -34,43 +34,15 @@ Follow-up: Can you come up with an algorithm that is less than O(n2) time comple
 class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
-        if(target%2==0)         //segment to check if target/2 exists twice in the array
-        {
-            int first,second;
-            auto itr=find(nums.begin(),nums.end(),target/2); //points to first occurence of target/2
-            if(itr!=nums.end())
-            {
-                first=itr-nums.begin();                         //first index
-                itr=find(nums.begin()+first+1,nums.end(),target/2); //points to second occurence of target/2
-                if(itr!=nums.end())
-                {
-                    second=itr-nums.begin();                    //second index
-                    return {first,second};
-                }
-            }
-        }
-
-        unordered_map<int,int> hashmap;     //hashmap to store original indexes of numbers before sorting
+        unordered_map<int,int> hashmap;    //to store latest index of an element
         
         for(auto i=0;i<nums.size();i++)
-        hashmap[nums[i]]=i;
-
-        sort(nums.begin(),nums.end());    //sorting to implement 2 pointers method 
-        
-        int left=0,right=nums.size()-1;     //2 pointers
-
-        while(left<=right)
         {
-            if(nums[left]+nums[right]==target)
-            return {hashmap[nums[left]],hashmap[nums[right]]};      //return original indexes of left and right numbers if sum of left number and right number is equal to target
-
-            else if(nums[left]+nums[right]>target)
-            right--;                    //if sum is greater than target decrement right index
-
-            else
-            left++;                     //if sum is less than target increment left index
+            if(hashmap.find(target-nums[i])!=hashmap.end())    //if target-nums[i] exists in the hashmap, then return both their indexes in a vector
+            return {hashmap[target-nums[i]],i};
+            else                                     //if not,then store the inden hashmap for later use
+            hashmap[nums[i]]=i;            
         }
-
         return {};                      //if no such combination exists, empty vector is returned
     }
 };
