@@ -1,0 +1,80 @@
+50. Pow(x, n)
+
+/*
+Implement pow(x, n), which calculates x raised to the power n (i.e., xn).
+
+ 
+
+Example 1:
+
+Input: x = 2.00000, n = 10
+Output: 1024.00000
+Example 2:
+
+Input: x = 2.10000, n = 3
+Output: 9.26100
+Example 3:
+
+Input: x = 2.00000, n = -2
+Output: 0.25000
+Explanation: 2-2 = 1/22 = 1/4 = 0.25
+ 
+
+Constraints:
+
+-100.0 < x < 100.0
+-231 <= n <= 231-1
+n is an integer.
+Either x is not zero or n > 0.
+-104 <= xn <= 104
+*/
+
+class Solution {
+public:
+    double myPow(double x, int n) {
+        if(n==0) return 1;              //anything to the power zero,is 1
+        else if(n>0)                    //if n is positive
+        {
+            if(n==1) return x;        //anything to the power 1,is the same number
+            vector<int> rem;          //we divide the power b by 2 repeatedly until it is 1 and store the remainders here
+            while(n>1)
+            {
+                rem.push_back(n%2);
+                n/=2;
+            }
+
+            double ans=x;                      //to store answer
+            for(int i=rem.size()-1;i>=0;i--)      //if remainder is 0,the ans would be ans to the power 2.if it is 1,we have to multiply an extra x to ans*ans for the remainder
+            {
+                if(rem[i]==0)
+                ans=ans*ans;
+                else
+                ans=ans*ans*x;
+            }
+            return ans;                      //we return ans variable
+        }
+        else
+        {
+            //same as above but here we divide instead of multiple as n is negative.
+            //here we convert n to long long absolute value version,as INT_MIN's absolute value can't be stored in an int
+
+            if(n==-1) return 1/x;
+            long long z=abs((long long)n);
+            vector<int> rem;
+            while(z>1)
+            {
+                rem.push_back(z%2);
+                z/=2;
+            }
+            double ans=1/x;
+            for(int i=rem.size()-1;i>=0;i--)
+            {
+                if(rem[i]==0)
+                ans=ans*ans;
+                else
+                ans=ans*ans/x;
+            }
+            return ans;
+        }
+    }
+};
