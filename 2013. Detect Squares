@@ -1,0 +1,87 @@
+/*
+
+2013. Detect Squares
+
+You are given a stream of points on the X-Y plane. Design an algorithm that:
+
+Adds new points from the stream into a data structure. Duplicate points are allowed and should be treated as different points.
+Given a query point, counts the number of ways to choose three points from the data structure such that the three points and the query point form an axis-aligned square with positive area.
+An axis-aligned square is a square whose edges are all the same length and are either parallel or perpendicular to the x-axis and y-axis.
+
+Implement the DetectSquares class:
+
+DetectSquares() Initializes the object with an empty data structure.
+void add(int[] point) Adds a new point point = [x, y] to the data structure.
+int count(int[] point) Counts the number of ways to form axis-aligned squares with point point = [x, y] as described above.
+ 
+
+Example 1:
+
+
+Input
+["DetectSquares", "add", "add", "add", "count", "count", "add", "count"]
+[[], [[3, 10]], [[11, 2]], [[3, 2]], [[11, 10]], [[14, 8]], [[11, 2]], [[11, 10]]]
+Output
+[null, null, null, null, 1, 0, null, 2]
+
+Explanation
+DetectSquares detectSquares = new DetectSquares();
+detectSquares.add([3, 10]);
+detectSquares.add([11, 2]);
+detectSquares.add([3, 2]);
+detectSquares.count([11, 10]); // return 1. You can choose:
+                               //   - The first, second, and third points
+detectSquares.count([14, 8]);  // return 0. The query point cannot form a square with any points in the data structure.
+detectSquares.add([11, 2]);    // Adding duplicate points is allowed.
+detectSquares.count([11, 10]); // return 2. You can choose:
+                               //   - The first, second, and third points
+                               //   - The first, third, and fourth points
+ 
+
+Constraints:
+
+point.length == 2
+0 <= x, y <= 1000
+At most 3000 calls in total will be made to add and count.
+*/
+
+class DetectSquares {
+public:
+    unordered_map<int,unordered_map<int,int>> xy,yx;    //xy maps x to {y,f} where point is (x,y) and frequency of the point of the point is f.Similarly yx maps y to {x,f}.
+    DetectSquares() {}
+    
+    void add(vector<int> point) 
+    {
+        //here we add up points to xy and yx and increase frequency if already present
+        xy[point[0]][point[1]]++;
+        yx[point[1]][point[0]]++;
+    }
+    
+    int count(vector<int> point) {
+        int x1=point[0],y1=point[1];                    //Given point
+        int ans=0;                                      //to count squares with positive area
+        for(auto p1:yx[y1])                              //we loop through all points on same y as given point.It denotes horizontal side
+        {
+            int x2=p1.first,y2=point[1],f=p1.second;      //2nd endpoint of horizontal side
+            int len=abs(x2-x1);                            //length of horizontal side
+            if(len==0) continue;                          //area has to be positive.if len is 0,area would be 0,hence this case is discarded
+            
+            
+                ans+=xy[x1][y1+len]*f*xy[x2][y2+len];    //we take xs of given point and 2nd end point and add len to the ys to find 2 other end points of the square.if present frequencies are multiplied.else if frequency of a ppoint is 0,net 0 is added to ans.
+            
+
+            
+            
+                ans+=xy[x1][y1-len]*f*xy[x2][y2-len];    //we d osimilar thing in other direction as well.we take xs of given point and 2nd end point and subtract len to the ys to find 2 other end points of the square.multiply all frequencies and add it to ans
+            
+        }
+        return ans;              //finally we return number of squares
+    }
+};
+
+/**
+ * Your DetectSquares object will be instantiated and called as such:
+ * DetectSquares* obj = new DetectSquares();
+ * obj->add(point);
+ * int param_2 = obj->count(point);
+ */
