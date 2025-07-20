@@ -80,78 +80,19 @@ public:
             }
         }
 
-        //at last we check if 9 mini squares have repaeated elements.the respective elements are stored in vector of hashsets
-        vector<unordered_set<char>> v(9);
+        //Then we check in 9 mini squares for repeating elements. We keep 9 zeroes in a 3*3 matrix.
+        //We check a mini square and place 1 bit in a digit of the corresponding 0 if that digit is placed in the mini square
+        vector<vector<int>> a(3,vector<int> (3,0));
         for(int i=0;i<9;i++)
         {
             for(int j=0;j<9;j++)
             {
-                if(board[i][j]=='.') continue;
-                if(i<3)
+                if(board[i][j]!='.')
                 {
-                    if(j<3)
-                    {
-                        if(v[0].find(board[i][j])==v[0].end())
-                        v[0].insert(board[i][j]);
-                        else return false;
-                    }
-                    else if(j<6)
-                    {                        if(v[1].find(board[i][j])==v[1].end())
-                        v[1].insert(board[i][j]);
-                        else return false;
-
-                    }
+                    if(a[i/3][j/3]&(1<<(board[i][j]-'0')))
+                    return false;
                     else
-                    {
-                                                if(v[2].find(board[i][j])==v[2].end())
-                        v[2].insert(board[i][j]);
-                        else return false;
-                    }
-
-                }
-                else if(i<6)
-                {
-                    if(j<3)
-                    {
-                        if(v[3].find(board[i][j])==v[3].end())
-                        v[3].insert(board[i][j]);
-                        else return false;
-                    }
-                    else if(j<6)
-                    {                        if(v[4].find(board[i][j])==v[4].end())
-                        v[4].insert(board[i][j]);
-                        else return false;
-
-                    }
-                    else
-                    {
-                                                if(v[5].find(board[i][j])==v[5].end())
-                        v[5].insert(board[i][j]);
-                        else return false;
-                    }
-
-                }
-                else
-                {
-                    if(j<3)
-                    {
-                        if(v[6].find(board[i][j])==v[6].end())
-                        v[6].insert(board[i][j]);
-                        else return false;
-                    }
-                    else if(j<6)
-                    {                        if(v[7].find(board[i][j])==v[7].end())
-                        v[7].insert(board[i][j]);
-                        else return false;
-
-                    }
-                    else
-                    {
-                                                if(v[8].find(board[i][j])==v[8].end())
-                        v[8].insert(board[i][j]);
-                        else return false;
-                    }
-
+                    a[i/3][j/3]|=(1<<(board[i][j]-'0'));
                 }
             }
         }
