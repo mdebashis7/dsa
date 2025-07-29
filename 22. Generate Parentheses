@@ -1,0 +1,45 @@
+/*
+22. Generate Parentheses
+
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+ 
+
+Example 1:
+
+Input: n = 3
+Output: ["((()))","(()())","(())()","()(())","()()()"]
+Example 2:
+
+Input: n = 1
+Output: ["()"]
+ 
+
+Constraints:
+
+1 <= n <= 8*/
+
+class Solution {
+public:
+    void func(int o,int c,int& n,vector<string>& ans,string& s)
+    {
+        if(o==n&&c==n)                  //if number of opening and closing parentheses is both n,we place the string in ans vector and return control
+        {
+            ans.push_back(s);return;
+        }
+        if(o>n||c>o) return;          //if in any case,number of closing brackets is more than number of opening brackets, or number of opening brackets is more than n,we return as the string is not valid
+
+        s+='(';func(o+1,c,n,ans,s);        //we add an opening bracket and call function with incrementing o
+        s.pop_back();                      //we pop off opening bracket
+        s+=')';func(o,c+1,n,ans,s);        //we add a closing bracket and call function with incrementing c
+        s.pop_back();                      //we pop off closing bracket
+    }
+
+    vector<string> generateParenthesis(int n) {
+        //we have a backtracking approach for this
+        vector<string> ans;        //we store possible strings inside this
+        string s="";                //we store individual string inside it
+        func(0,0,n,ans,s);          //we call the function with number of opening and closing parentheses both as 0
+        return ans;                //finally we return answer strings vector
+    }
+};
