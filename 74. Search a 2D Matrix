@@ -1,0 +1,67 @@
+/*
+74. Search a 2D Matrix
+
+You are given an m x n integer matrix matrix with the following two properties:
+
+Each row is sorted in non-decreasing order.
+The first integer of each row is greater than the last integer of the previous row.
+Given an integer target, return true if target is in matrix or false otherwise.
+
+You must write a solution in O(log(m * n)) time complexity.
+
+ 
+
+Example 1:
+
+
+Input: matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3
+Output: true
+Example 2:
+
+
+Input: matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13
+Output: false
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 100
+-104 <= matrix[i][j], target <= 104
+*/
+
+class Solution {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        int m=matrix.size(),n=matrix[0].size();          //dimensions of matrix
+
+        //we do 2 binary searches,one row-wise and another one side the row-wise b-search,doen column-wise
+
+        int u=0,d=m-1;      //end points of row-wise b-search
+        while(u<=d)
+        {
+            int mid=u+(d-u)/2;      //mid point of interval[u,d]
+            if(target>=matrix[mid][0]&&target<=matrix[mid][n-1])        //if target is in the middle row, we move on to 2nd b-search done column-wise to find its exact position
+            {
+                int l=0,r=n-1;                            //end points of the interval [l,r]
+                while(l<=r)
+                {
+                    int mid2=l+(r-l)/2;                  //mid point of interval [l,r]
+                    if(target==matrix[mid][mid2])          //if target exists,we return true
+                    return true;
+                    else if(target>matrix[mid][mid2])      //if taregt is gretaer than mid2 element,we move left boundary l to mid2+1 to half the search area
+                    l=mid2+1;
+                    else                                  //if target is more than mid2 element,we move right boundary to mid2-1 to half search area
+                    r=mid2-1;                        
+                }
+                break;                                    //to end execution of outer loop
+            }
+            else if(target>matrix[mid][n-1])            //if target is more than last element of mid row,we move upper boundary u to mid+1 to half the search area
+            u=mid+1;
+            else                                        //if target is less than first element of mid row,we move lower boundary l to mid-11 to half the search area
+            d=mid-1;
+        }
+        return false;                              //if element is not found,then control reaches here
+    }
+};
