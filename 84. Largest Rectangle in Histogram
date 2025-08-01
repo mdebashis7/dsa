@@ -1,0 +1,84 @@
+/*
+
+84. Largest Rectangle in Histogram
+
+Given an array of integers heights representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.
+
+ 
+
+Example 1:
+
+
+Input: heights = [2,1,5,6,2,3]
+Output: 10
+Explanation: The above is a histogram where width of each bar is 1.
+The largest rectangle is shown in the red area, which has an area = 10 units.
+Example 2:
+
+
+Input: heights = [2,4]
+Output: 4
+ 
+
+Constraints:
+
+1 <= heights.length <= 105
+0 <= heights[i] <= 104
+*/
+
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        int n=heights.size();                      //size of heights
+        vector<int> ns(n,INT_MAX),ps(n,INT_MAX);      //stores indexes of next smaller element and previous smaller element of an element
+        stack<pair<int,int>> st;                    
+
+        for(int i=0;i<n;i++)
+        {
+            if(st.empty()||st.top().first<=heights[i])          //we push up elements and their indexes as a pair, onto the stack,if they are greater than top element of the stack
+            st.push({heights[i],i});
+            else
+            {
+                while(st.size()>0&&st.top().first>heights[i])      //else we pop off elements from the stack and place the index of curr element in the ns vector at the respective indexes of popped off elements
+                {
+                    ns[st.top().second]=i;
+                    st.pop();
+                }
+                st.push({heights[i],i});      //finally we push the current element and its index onto the stack
+            }
+        }
+        
+        while(st.size())st.pop();    //we clear the stack,to repeat the process to find previous smaller element by iterating from last to first
+
+        for(int i=n-1;i>=0;i--)
+        {
+            if(st.empty()||st.top().first<=heights[i])        //we push up elements and their indexes as a pair, onto the stack,if they are greater than top element of the stack
+            st.push({heights[i],i});
+            else
+            {
+                while(st.size()>0&&st.top().first>heights[i])    //else we pop off elements from the stack and place the index of curr element in the ps vector at the respective indexes of popped off elements
+                {
+                    ps[st.top().second]=i;
+                    st.pop();
+                }
+                st.push({heights[i],i});        //finally we push the current element and its index onto the stack
+            }
+        }
+        
+        int ans=0;
+
+        //we iterate through the elements and create a histogram of that height and length as denoted by difference of next smaller element and previous smaller element+1
+        //ans would be max of ans and that histogram area
+        //INT_MAX in ns[i] means histogram of that height ends at n-1 index.Similarly INT_MAX in ps[i] means histogram of that height starts at index 0
+
+        for(int i=0;i<n;i++)             
+        {
+            if(ns[i]==INT_MAX&&ps[i]==INT_MAX)ans=max(ans,heights[i]*n);
+            else if(ns[i]==INT_MAX) ans=max(ans,heights[i]*(n-ps[i]-1));
+            else if(ps[i]==INT_MAX) ans=max(ans,heights[i]*(ns[i]));
+            else ans=max(ans,heights[i]*(ns[i]-ps[i]-1));
+        }
+        return ans;
+
+    }
+};
