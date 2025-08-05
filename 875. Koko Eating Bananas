@@ -1,0 +1,71 @@
+/*
+875. Koko Eating Bananas
+
+Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
+
+Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour.
+
+Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return.
+
+Return the minimum integer k such that she can eat all the bananas within h hours.
+
+ 
+
+Example 1:
+
+Input: piles = [3,6,7,11], h = 8
+Output: 4
+Example 2:
+
+Input: piles = [30,11,23,4,20], h = 5
+Output: 30
+Example 3:
+
+Input: piles = [30,11,23,4,20], h = 6
+Output: 23
+ 
+
+Constraints:
+
+1 <= piles.length <= 104
+piles.length <= h <= 109
+1 <= piles[i] <= 109
+*/
+
+class Solution {
+public:
+    int minEatingSpeed(vector<int>& piles, int h) {
+        long long sum=0;                            //to store total number of bananas
+        for(auto i:piles)
+        sum+=i;
+
+        long long ma=sum,mi=1;                      //ma and mi represent the range of banana eating per hour.mi is minimum which can be 1 and ma is amximum which can be sum
+
+        long long ans=ma;                           //to store answer variable which is minimum number of bananas to be eaten per hour to finish up before h hours
+
+
+        //we perform binary search between mi and ma and if all bananas can be eaten at the particular midpoint,we move search area to [mi,mid-1].If all cant be eaten within h hours,we move search area to [mid+1,ma]
+        while(mi<=ma)
+        {
+            long long mid=mi+(ma-mi)/2;        //mid point of mi and ma
+
+            if(mid==0)break;
+            long long h1=0;                    //stores number of hours to eat all bananas at mid eating rate
+            for(auto i:piles)
+            {
+                h1+=i/mid;
+                if(i%mid!=0)
+                h1++;
+            }
+
+            if(h1>h)                          //means bananas cabt be eaten
+            mi=mid+1;                        //we decrease search interval
+            else                              //means bananas can be eaten
+            {
+                ans=min(ans,mid);                //since we need to find minimum ans
+                ma=mid-1;                          //then we decrease search interval
+            }
+        }
+        return ans;
+    }
+};
