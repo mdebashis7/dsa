@@ -60,36 +60,45 @@ public:
 class Solution {
 public:
     Node* copyRandomList(Node* head) {
-        unordered_map<Node*,Node*> mp;      //maps original nodes to copy nodes
-
-        if(head==nullptr) return nullptr;       //copy of a nullptr is nullptr
-
-        auto a=new Node(head->val);             //head of deep copy list which we store in hashmap
-        mp[head]=a; 
-
-        auto h=head->next;          //for traversal across the list
+        if(head==nullptr) return nullptr;        //copy of a nullptr is nullptr
         
-
-        //we traverse across the list via h and a and go on creating copies of nodes and map them in the hashmap
-        //a represents the copy of the node before h since we forward a only if h isnt nullptr
+        auto h=head;                      //we create deep copies of nodes and place the corresponding copy just after original node in that list only
         while(h!=nullptr)
         {
-            mp[h]=new Node(h->val);         //creates copy
-            a->next=mp[h];                  //links the copied node to end of copied list
-
-            a=a->next;                      //forwards copied node
-            h=h->next;                      //forwards original node
+            auto nxt=h->next;
+            h->next=new Node(h->val);
+            h->next->next=nxt;
+            h=nxt;
         }
 
-        h=head;                     //to set random pointers in the copied nodes
+        h=head;                               //then we point the random pointers of the copies as per the original nodes
         while(h!=nullptr)
         {
-            if(h->random!=nullptr)          //if the original node points to another node say x via random
-            mp[h]->random=mp[h->random];    //then the copy node will point to copy of x via random of copy node
-
-            h=h->next;          //forward h
+            if(h->random!=nullptr)
+            h->next->random=h->random->next;
+            h=h->next->next;
         }
 
-        return mp[head];        //return copy of head node
+        auto ans=head->next;h=head;             //then we separate the original nodes and copied node joining both in separate lists and returning copied list
+        while(h!=nullptr)
+        {
+            auto orNxt=head,cNxt=head;
+
+            if(h->next!=nullptr)
+            orNxt=h->next->next;
+            if(orNxt!=nullptr)
+            cNxt=h->next->next->next;
+            else
+            {
+                h->next->next=nullptr;
+                h->next=nullptr;
+                break;
+            }
+
+            h->next->next=cNxt;
+            h->next=orNxt;
+            h=orNxt;
+        }
+        return ans;
     }
 };
