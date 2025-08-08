@@ -42,30 +42,65 @@ The number of nodes in the list is in the range [1, 5 * 104].
  */
 
 
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
 class Solution {
 public:
-    void reorderList(ListNode* head) {
-        if(head==nullptr||head->next==nullptr||head->next->next==nullptr) return;       //if list has 0,1,or 2 nodes, no reordering required
-
-        vector<ListNode*> nodes;    //we put all nodes in a vector
-        auto h=head;
+    ListNode* rev(ListNode* head)                              //to reverse linked list
+    {
+        if(head==nullptr||head->next==nullptr) return head;
+        auto h=head,prev=head,next=head;
+        prev=nullptr;
         while(h!=nullptr)
         {
-            nodes.push_back(h);
+            next=h->next;
+            h->next=prev;
+            prev=h;
+            h=next;
+        }
+        return prev;
+    }
+    void reorderList(ListNode* head) {
+        if(head==nullptr||head->next==nullptr||head->next->next==nullptr) return;     //no need to perform operation in these cases
+
+        auto h=head;                   //we count number of nodes first,which is stored in n
+        int n=0;
+        while(h!=nullptr)
+        {
+            n++;
             h=h->next;
         }
 
-        int left=0,right=nodes.size()-1;        //we set 2 indexes left and right and link them as desired in the problem
-        while(left<right)
+        int c=0;                       //we store first half of list in f and second part of list in s.we know the midpoint via c when c=n-n/2
+        auto f=head,s=head;
+        h=head;
+
+        while(h!=nullptr)
         {
-            nodes[left]->next=nodes[right];
-            left++;
-            if(left<right)
-            {
-                nodes[right]->next=nodes[left];
-                right--;
-            }
+            c++;
+            if(c==n-n/2)
+            {s=h->next;
+            h->next=nullptr;break;}
+            h=h->next;
         }
-        nodes[nodes.size()/2]->next=nullptr;    //in the middlemost node, we set its next node to nullptr to mark end of list
+
+        s=rev(s);                    //then we reverse the second half of list and then interweave the nodes in alternative manner to give desired result
+        while(s!=nullptr)
+        {
+            auto fnxt=f->next,snxt=s->next;
+            f->next=s;
+            s->next=fnxt;
+            f=fnxt;
+            s=snxt;
+        }
+    
     }
 };
