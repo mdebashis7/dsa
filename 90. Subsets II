@@ -1,0 +1,52 @@
+/*
+90. Subsets II
+
+Given an integer array nums that may contain duplicates, return all possible subsets (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,2]
+Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+Example 2:
+
+Input: nums = [0]
+Output: [[],[0]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+*/
+
+class Solution {
+public:
+    void func(vector<int>& candidates, vector<int>& v,vector<vector<int>>& ans,int ind)    //backtracking function to create subsets and push it onto powerset
+    {
+        if(ind==candidates.size())        //means end of set reached,we push the subset onto powerset and return
+        {
+            ans.push_back(v);
+            return;
+        }
+        if(ind>=candidates.size())return;  //if index>=set.size(),we return
+        
+        v.push_back(candidates[ind]);  //element at index ind is included in subset and then function is called
+        func(candidates,v,ans,ind+1);
+        
+        v.pop_back();            //element at index ind is excluded
+        
+        while(ind+1<candidates.size()&&candidates[ind+1]==candidates[ind])    //element at later indexes, if equal to element at index ind are also excluded via this loop and then backtracking function is calleed
+        ind++;
+        func(candidates,v,ans,ind+1);
+    }
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(),nums.end());            //we sort numbers in the vector
+        vector<int> v;vector<vector<int>> ans;      //we store subset in v and ans is power set
+        func(nums,v,ans,0);
+        return ans;
+    }
+};
