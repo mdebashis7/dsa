@@ -1,0 +1,65 @@
+/*
+40. Combination Sum II
+
+Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+
+Each number in candidates may only be used once in the combination.
+
+Note: The solution set must not contain duplicate combinations.
+
+ 
+
+Example 1:
+
+Input: candidates = [10,1,2,7,6,1,5], target = 8
+Output: 
+[
+[1,1,6],
+[1,2,5],
+[1,7],
+[2,6]
+]
+Example 2:
+
+Input: candidates = [2,5,2,1,2], target = 5
+Output: 
+[
+[1,2,2],
+[5]
+]
+ 
+
+Constraints:
+
+1 <= candidates.length <= 100
+1 <= candidates[i] <= 50
+1 <= target <= 30
+*/
+
+class Solution {
+public:
+    void func(vector<int>& candidates, int& target,vector<int>& v,int& s,vector<vector<int>>& ans,int ind)          //backtracking function
+    {
+        if(ind==candidates.size())              
+        {
+            if(target==s)ans.push_back(v);    //if target==s, and ind has reached end of vector,we push v into ans and return
+            return;
+        }
+        if(s>target||ind>=candidates.size())return;  //if sum >target || ind>= size of candidates,we return
+        s+=candidates[ind];                        //element at index ind is included and thhen backtracking function is called from next index
+        v.push_back(candidates[ind]);
+        func(candidates,target,v,s,ans,ind+1);
+        s-=candidates[ind];                          //element at index ind is excluded but an equal element maybe at next position,so we run a loop to encounter next unequal element and then call func from that index
+        v.pop_back();
+        
+        while(ind+1<candidates.size()&&candidates[ind+1]==candidates[ind])
+        ind++;
+        func(candidates,target,v,s,ans,ind+1);
+    }
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        sort(candidates.begin(),candidates.end());            //we sort the elements first
+        int s=0;vector<int> v;vector<vector<int>> ans;        //s stores sum and v stores elements
+        func(candidates,target,v,s,ans,0);
+        return ans;
+    }
+};
