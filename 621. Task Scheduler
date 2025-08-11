@@ -1,0 +1,98 @@
+/*
+
+621. Task Scheduler
+
+You are given an array of CPU tasks, each labeled with a letter from A to Z, and a number n. Each CPU interval can be idle or allow the completion of one task. Tasks can be completed in any order, but there's a constraint: there has to be a gap of at least n intervals between two tasks with the same label.
+
+Return the minimum number of CPU intervals required to complete all tasks.
+
+ 
+
+Example 1:
+
+Input: tasks = ["A","A","A","B","B","B"], n = 2
+
+Output: 8
+
+Explanation: A possible sequence is: A -> B -> idle -> A -> B -> idle -> A -> B.
+
+After completing task A, you must wait two intervals before doing A again. The same applies to task B. In the 3rd interval, neither A nor B can be done, so you idle. By the 4th interval, you can do A again as 2 intervals have passed.
+
+Example 2:
+
+Input: tasks = ["A","C","A","B","D","B"], n = 1
+
+Output: 6
+
+Explanation: A possible sequence is: A -> B -> C -> D -> A -> B.
+
+With a cooling interval of 1, you can repeat a task after just one other task.
+
+Example 3:
+
+Input: tasks = ["A","A","A", "B","B","B"], n = 3
+
+Output: 10
+
+Explanation: A possible sequence is: A -> B -> idle -> idle -> A -> B -> idle -> idle -> A -> B.
+
+There are only two types of tasks, A and B, which need to be separated by 3 intervals. This leads to idling twice between repetitions of these tasks.
+
+ 
+
+Constraints:
+
+1 <= tasks.length <= 104
+tasks[i] is an uppercase English letter.
+0 <= n <= 100
+*/
+
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        priority_queue<pair<int,char>> pq;      //stores frequency and task as a pair
+        unordered_map<char,int> mp;            //to calculate frequency of each task
+        for(auto c:tasks)
+        mp[c]++;
+
+        for(auto p:mp)                          //we push frequency of each task and task onto he max heap
+        {
+            pq.push({p.second,p.first});
+        }
+        
+        int ans=0;                            //stores total intervals required
+        vector<pair<int,char>> v;              //stores the tasks, just ran with a loop iteration and which can't be run now because of the time-interval constraint
+        while(pq.size())                            ///means tasks are still present
+        {
+            if(pq.top().first==1)                //means just 1 iteration of each leftover task is left.So we break from the loop by adding the number of leftover tasks to ans.It is for last round of execution
+            {
+                ans+=pq.size();break;
+            }
+            int i=0;                              //counter for interval for 1 round of exection
+            while(i<=n)                                //we execute n+1 tasks in 1 round,since time interval constraint is n.so a task run at 1st interval can be next run after n intervals i.e at (n+2)th interval
+            {                
+                if(pq.empty()) break;                //if there are not enough tasks for n+1 time intervals.As a result,the CPU would remain idle for some time due to this,in the loop below
+
+                auto x=pq.top();pq.pop();                //we execute the task with highest frequency left.and after it is executed,we move it to v,so ensure it doesnt execute again in current round
+                if(x.first-1>0)
+                {
+                    v.push_back({x.first-1,x.second});
+                }
+                i++;
+            }
+            while(i<=n)                  //if there are not enough tasks for n+1 intervals,the above loop would break from above loop and CPU would be idle for (n+1-i) intervals.
+            {
+                i++;
+            }
+
+            if(v.size()>0)                  //if there are tasks in v,it means one of round o f execution is done.so 1 bundle of time intervals is consumed.So we add of n+1 to ans.
+            ans+=(n+1);
+
+            for(auto p:v)          //we move pairs from v to pq for next round of executions and clear out v
+            pq.push(p);
+
+            v.clear();
+        }
+        return ans;                //finally we return ans
+    }
+};
