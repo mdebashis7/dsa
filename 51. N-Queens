@@ -1,0 +1,69 @@
+/*
+51. N-Queens
+
+The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other.
+
+Given an integer n, return all distinct solutions to the n-queens puzzle. You may return the answer in any order.
+
+Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space, respectively.
+
+ 
+
+Example 1:
+
+
+Input: n = 4
+Output: [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+Explanation: There exist two distinct solutions to the 4-queens puzzle as shown above
+Example 2:
+
+Input: n = 1
+Output: [["Q"]]
+ 
+
+Constraints:
+
+1 <= n <= 9
+*/
+
+class Solution {
+public:
+    void func(vector<string>& board,unordered_set<int>& col,unordered_set<int>& diag1,unordered_set<int>& diag2,vector<vector<string>>& ans,int ind,int& n)
+    {
+        if(ind==n)                      //meaning n queens are placed,so we store the board position in ans and return
+        {
+            ans.push_back(board);
+            return;
+        }
+        for(int j=0;j<n;j++)                        //we iterate across columns of a particular row,check if that column and2 diagonals involving the square isnt attacked by a queen placed before
+        {
+            if(col.find(j)==col.end())
+            {
+                if(diag1.find(ind+j)==diag1.end())
+                {
+                    if(diag2.find(j-ind)==diag2.end())
+                    {
+                        board[ind][j]='Q';                      //if so,we place a queen there,add the column and 2 diagonals to hash-sets to ensure they arent used after
+                        col.insert(j);
+                        diag1.insert(ind+j);
+                        diag2.insert(j-ind);
+                        func(board,col,diag1,diag2,ans,ind+1,n);  //then we go to place the next queen in ind+1 th row
+                        board[ind][j]='.';                            //after control returns,we pop off the column,diagonals from the hashsets and remove the queen from the square to explore other placements
+                        col.erase(j);
+                        diag1.erase(ind+j);
+                        diag2.erase(j-ind);
+                    }
+                }
+            }
+        }
+
+    }
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> ans;                  //stores all possible board combinations
+        unordered_set<int> col,diag1,diag2;          //stores which columns,diagonal are used and cant be used for placing queens in them 
+        vector<string> board(n,string (n,'.'));      //stores an empty board,to be modified inside the backtracking function
+        func(board,col,diag1,diag2,ans,0,n);        //we call backtracking function with 0th queen to be place on 0th row
+        
+        return ans;          //finally we return all feasible board positions
+    }
+};
