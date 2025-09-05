@@ -1,0 +1,100 @@
+/*
+684. Redundant Connection
+
+In this problem, a tree is an undirected graph that is connected and has no cycles.
+
+You are given a graph that started as a tree with n nodes labeled from 1 to n, with one additional edge added. The added edge has two different vertices chosen from 1 to n, and was not an edge that already existed. The graph is represented as an array edges of length n where edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the graph.
+
+Return an edge that can be removed so that the resulting graph is a tree of n nodes. If there are multiple answers, return the answer that occurs last in the input.
+ 
+
+Example 1:
+
+Input: edges = [[1,2],[1,3],[2,3]]
+Output: [2,3]
+Example 2:
+
+
+Input: edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
+Output: [1,4]
+ 
+
+Constraints:
+
+n == edges.length
+3 <= n <= 1000
+edges[i].length == 2
+1 <= ai < bi <= edges.length
+ai != bi
+There are no repeated edges.
+The given graph is connected.
+*/
+
+class Solution {
+public:
+    void dfs(unordered_map<int,unordered_set<int>>& mp,unordered_set<int>& visited,int parent,int node,int& cNode)
+    {
+        if(cNode!=0)                            //once a loop cycle node is found,we return from dfs
+        return;
+
+        if(visited.find(node)!=visited.end())    //if the node has been previously visited,it confirms existence of a cycle with the node included in it.so we assign it to cNode and exit from the dfs
+        {
+            cNode=node;
+            return;
+        }
+        visited.insert(node);                //we the node is unvisited,we put it inside the visited set
+        for(auto n:mp[node])                    //we iterate through the neighbors of the node
+        {
+            if(n!=parent)                      //to prevent the flow of control back to the node's parent
+            dfs(mp,visited,node,n,cNode);      //we flow the control of dfs into the neighbor nodes of node
+
+            if(cNode!=0)                //if after the dfs of a neighbor of node,cNode has been changed,it means a loop has been found,so we need to exit the dfs
+            return;
+        }
+    }
+    void dfs2(unordered_map<int,unordered_set<int>>& mp,unordered_set<int>& cycle,int parent,int node,bool& done)
+    {
+        if(done==true)                        //if all loop cycle nodes have been stored in cycle,we exit from the dfs
+        return;
+
+        if(cycle.find(node)!=cycle.end())      //if the node is in the cycle,it means it has been visited before and hence it is the starting point and ending point of the loop,hence we change done to true and exit from the dfs
+        {
+            done=true;
+            return;
+        }
+        cycle.insert(node);              //we insert the node in the set
+        for(auto n:mp[node])                  //we iterate throught the neighbors of the node and do dfs of each of the neighbors except the parent
+        {
+            if(n!=parent)
+            {dfs2(mp,cycle,node,n,done);
+
+            if(done==true)            //if after dfs,done has been changed,it means all loop cycle nodes has beeen stored,so we exit from dfs
+            return;}
+        }
+        cycle.erase(node);          //we erase this node bcz it onfirms that no cycle exists via this branch
+    }
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        unordered_map<int,unordered_set<int>> mp;                      //we store neighbors of a node in this map
+        for(auto v:edges)                                        //we iterate through all edges
+        {
+            mp[v[0]].insert(v[1]);                              //since it is an undirected graph,for edge {a,b},a is stored as neighbor of b and b is neighbor of a
+            mp[v[1]].insert(v[0]);
+        }
+
+        unordered_set<int> visited;                        //first we try to get a node which is involved in the loop cycle.For that we do dfs
+        int cNode=0;                                              //During the dfs,the first node which we see,is involved in the cycle, is stored in cNode and then exit from the dfs
+        dfs(mp,visited,0,1,cNode);                              //dfs,we initialize 1 as first node to enter the dfs and its parent as 0(which doesnt exist).visited stores the visited nodes
+
+        unordered_set<int> cycle;                            //to store the nodes involved in the loop cycle
+        bool done=false;                                      //stores if all nodes of the loop cycle have been captured or not
+        dfs2(mp,cycle,0,cNode,done);                      //we do a dfs again via dfs2,to store just the loop cycle nodes in cycle set.parent is 0 again(which doesnt exist) and here we start the dfs from cNode
+
+        for(int i=(int)edges.size()-1;i>=0;i--)              //we finally iterate throught the edges and wherever we find an edge that encloses the loop,we return that
+        {
+            int a=edges[i][0],b=edges[i][1];
+            if(cycle.find(a)!=cycle.end()&&cycle.find(b)!=cycle.end())
+            return {a,b};
+        }
+        return {};
+    }
+};
