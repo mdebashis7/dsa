@@ -1,0 +1,87 @@
+/*
+1584. Min Cost to Connect All Points
+Solved
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+You are given an array points representing integer coordinates of some points on a 2D-plane, where points[i] = [xi, yi].
+
+The cost of connecting two points [xi, yi] and [xj, yj] is the manhattan distance between them: |xi - xj| + |yi - yj|, where |val| denotes the absolute value of val.
+
+Return the minimum cost to make all points connected. All points are connected if there is exactly one simple path between any two points.
+
+ 
+
+Example 1:
+
+
+Input: points = [[0,0],[2,2],[3,10],[5,2],[7,0]]
+Output: 20
+Explanation: 
+
+We can connect the points as shown above to get the minimum cost of 20.
+Notice that there is a unique path between every pair of points.
+Example 2:
+
+Input: points = [[3,12],[-2,5],[-4,1]]
+Output: 18
+ 
+
+Constraints:
+
+1 <= points.length <= 1000
+-106 <= xi, yi <= 106
+All pairs (xi, yi) are distinct.
+*/
+
+class Solution {
+public:
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        int n=points.size();                                                    //number of points
+        if(n==1) return 0;                                                        //graph is connected
+
+        
+        priority_queue<pair<int,pair<int,int>>,vector<pair<int,pair<int,int>>>,greater<>> pq;      //stores edges of connected components
+        int ans=0;                                                          //total cost of connecting points
+        unordered_set<int> connected;                                        //stores which points are connectec
+
+        connected.insert(0);                                                      //we start form arbitrary node,0 and push all its edges into the min heap
+        for(int i=1;i<n;i++)
+        pq.push({abs(points[0][0]-points[i][0])+abs(points[0][1]-points[i][1]),{0,i}});
+
+        while(connected.size()<n)                                              //means we repeat the loop until all points are connected
+        {
+            auto x=pq.top();                                                  //we take out minimum weighted edge of all connected nodes
+            auto cost=x.first,i=x.second.first,j=x.second.second;
+            pq.pop();
+
+            if(connected.find(i)!=connected.end()&&connected.find(j)!=connected.end())            //if both endpoints are present in connected set or both are not present,we go to next iteration
+            continue;
+            else if(connected.find(i)!=connected.end())                              //if anyone endpoint isnt present,we push it into conncted set and push all its edges into the min heap
+            {
+                ans+=cost;
+                connected.insert(j);
+                for(int k=0;k<n;k++)
+                {
+                    if(k==j)continue;
+                    pq.push({abs(points[j][0]-points[k][0])+abs(points[j][1]-points[k][1]),{j,k}});
+                }
+            }
+            else if(connected.find(j)!=connected.end())
+            {
+                ans+=cost;
+                connected.insert(i);
+                for(int k=0;k<n;k++)
+                {
+                    if(k==i)continue;
+                    pq.push({abs(points[i][0]-points[k][0])+abs(points[i][1]-points[k][1]),{i,k}});
+                }
+            }
+        }
+
+        return ans;                              //finally we return minimum cost of connected the points
+    }
+};
+ 
